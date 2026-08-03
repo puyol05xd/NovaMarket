@@ -2,13 +2,13 @@
 
 Integrantes: Juan Diego Serpa Ruiz, Juan Esteban Camacho Castro, Santiago Rueda Plata, Juan Pablo González Ricaurte
 
-## **Introducción**
+## **1. Introducción**
 
-### **Objetivo**
+### **1.1. Objetivo**
 
 Evaluar la calidad de la información en la base de datos de NovaMarket identificando anomalías, incoherencias y demás aspectos que generen una alteración en los datos. El propósito es establecer un plan de saneamiento antes de antes de usarlos en los reportes y modelos de análisis del negocio.
 
-### **Descripción del Dataset**
+### **1.2. Descripción del Dataset**
 
 
 ```python
@@ -240,8 +240,8 @@ print("\n", df.info)
 
 El dataset tiene 620 filas y 14 columnas. La mayoría de los campos son de tipo texto, mientras que solo tres columnas son numéricas (codigo_postal, unidades, edad_cliente) y una es decimal (precio). A primera vista los datos presentan problemas como: valores nulos, registros duplicados, inconsistencias en el formato de textos (como diferencias entre mayúsculas y minúsculas) y datos anormales como precios, edades y unidades con valores negativos o fuera de rango.
 
-## **Diagnóstico por Dimensión**
-### **Completitud**
+## **2. Diagnóstico por Dimensión**
+### **2.1. Completitud**
 
 
 ```python
@@ -297,7 +297,7 @@ df.isna().sum()
 
 En cuanto a la completitud de los datos, se identificaron varios campos con datos faltantes que afectan la calidad del dataset. La variable más afectada es correo, con 104 registros nulos (16.8%), lo que representa la pérdida de información en el contacto con los clientes. Le sigue el nivel_satisfaccion, donde faltan 46 datos (7.4%), limitando la evaluación de la experiencia del usuario. Por su parte, la columna ciudad presenta 31 valores ausentes (5.0%), mientras que precio registra 21 datos faltantes (3.4%), lo cual afecta los analisis economicos en cuanto a ventas.
 
-### **Exactitud**
+### **2.2. Exactitud**
 
 
 ```python
@@ -322,7 +322,7 @@ print(f"Edades negativas: {edades_negativas} ({percentage_edades_negativas:.2f}%
 
 Ahora, respecto a la exactitud de los datos, se detectaron números negativos. En la variable precio, 19 registros (3.06%) presentan valores negativos, afectando de forma directa el cálculo de ingresos. Se observa en edad_cliente, con 15 datos anómalos (2.42%), y en unidades, donde 14 registros (2.26%) se encuentran por debajo de 0, lo que rompe la lógica total de la variable "unidades".
 
-### **Consistencia**
+### **2.3. Consistencia**
 
 
 ```python
@@ -534,7 +534,7 @@ print(f"\nProductos en categoría incorrecta: {len(inconsistentes)} ({len(incons
 
 En cuanto a la consistencia de los datos, encontramos varios fallos al momento de agrupar y organizar la información. El primer error está en la asignación de categorías, donde hay muchos productos guardados en la sección equivocada (como una aspiradora en belleza). También hay un problema en ciudad y categoria_producto, ya que la misma palabra está escrita de formas distintas, lo que hace que el sistema las tome como cosas diferentes. Por último, hay un error entre la ciudad y el codigo_postal, registrando códigos postales de una ciudad en otra.
 
-### **Validez**
+### **2.4. Validez**
 
 
 ```python
@@ -559,7 +559,7 @@ print(f"Fechas con formato inválido: {fechas_invalidas_reales.sum()} ({fechas_i
 
 En cuanto a la validez de los datos, encontramos registros con formatos incorrectos que impiden procesar la información. Lo primero es que en la columna fecha_compra, hay 401 fechas con un formato inválido que no se pueden leer correctamente para saber cuándo se realizo dicha venta. Además, encontramos 51 correos electrónicos que están mal escritos porque les falta el arroba (@) o el punto (.).
 
-### **Unicidad**
+### **2.5. Unicidad**
 
 
 ```python
@@ -572,7 +572,7 @@ print(f"Pedidos con misma id_pedido: {duplicados_clave} ({duplicados_clave/len(d
 
 En cuanto a la unicidad, encontramos 20 registros duplicados (3.23%), donde se repite exactamente el mismo número de pedido (id_pedido) y toda la información de la fila. Esto significa que hay compras registradas dos veces de forma idéntica.
 
-### **Oportunidad**
+### **2.6. Oportunidad**
 
 
 ```python
@@ -603,7 +603,7 @@ print(f"Registros con fechas futuras (> {hoy.date()}): {cant_futuras} ({pct_futu
 
 Al analizar el rango de fechas, encontramos que el dataset va desde el 8 de enero de 2025 hasta el 20 de mayo de 2027, sumando un total de 862 días. El dato que mas resalta es que tenemos 46 registros (7.42%) con fechas futuras, posteriores al 3 de agosto de 2026. Incluso el registro más lejano supera la fecha actual por 290 días.
 
-## **Catálogo de Problemas**
+## **3. Catálogo de Problemas**
 
 | Problema | Dimensión | Afectadas | Registros | Impacto |
 | :--- | :--- | :--- | :--- | :--- |
@@ -616,7 +616,7 @@ Al analizar el rango de fechas, encontramos que el dataset va desde el 8 de ener
 | **Filas o claves duplicadas** | Unicidad | id_pedido, Filas completas | id_pedido: 20 (3.23%)<br>Filas exactas: 20 (3.23%) | **Medio** |
 | **Fechas futuras respecto al análisis** | Oportunidad | fecha_compra | fecha_compra: 46 (7.42%) | **Bajo** |
 
-## **Priorización**
+## **4. Priorización**
 
 **1. Correos y fechas con mal formato:** Hay muchisimas fechas de compra invalidas (64.68%), así que no podemos saber cuando se vendío qué. Los correos mal escritos tambien hacen que a los clientes no le lleguen las facturaciones o demás notificaciones.
 
@@ -634,7 +634,7 @@ Al analizar el rango de fechas, encontramos que el dataset va desde el 8 de ener
 
 **8. Fechas del futuro:** Hay compras registradas con fechas que aún no han pasado (como mayo de 2027). Toca analizar que pudo haber ocurrido y decidir si se modifica o se eliminan dichas filas.
 
-## **Recomendaciones**
+## **5. Recomendaciones**
 
 Para las fechas, convertiremos fecha_compra a formato válido, dejando nulas las ilegibles y corrigiendo las 46 fechas futuras. Para los correos faltantes o inválidos, se asignará un valor como 'sin_correo'.
 
